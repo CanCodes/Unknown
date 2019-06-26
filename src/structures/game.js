@@ -13,6 +13,7 @@ class Game {
         this.redPoint = 0;
         this.bluePoint = 0;
         this.turn = "red"
+        this.captains = [userID]
         this.running = false;
         this.words = [/* {word: "word", team: "red/blue/gray/dead"} */]
     }
@@ -25,7 +26,9 @@ class Game {
         this.players = this.players.sort(() => Math.random() - 0.5);
         this.red = this.players.slice(0, this.players.length / 2)
         this.blue = this.players.slice(this.players.length / 2 + 1, this.players.length)
-        
+
+        // KAPTANLARI TAKIMDAN ÇIKARTMAYI UNUTMA
+
         //words
         this.words = wordsList.sort(() => Math.random() - 0.5).slice(0, 25)
         this.words.forEach(a => {
