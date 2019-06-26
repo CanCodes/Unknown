@@ -27,7 +27,7 @@ class Game {
         this.red = this.players.slice(0, this.players.length / 2)
         this.blue = this.players.slice(this.players.length / 2 + 1, this.players.length)
 
-        // KAPTANLARI TAKIMDAN ÇIKARTMAYI UNUTMA
+        // KAPTANLARI TAKIMDAN ÇIKARTMAYI UNUTMA - CAN'A NOT
 
         //words
         this.words = wordsList.sort(() => Math.random() - 0.5).slice(0, 25)
