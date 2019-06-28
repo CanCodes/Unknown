@@ -70,7 +70,6 @@ class gameCmd extends baseCmd {
                     client.games.get(args[1]).invitePlayer(args[1]).then(resolve => {
                         resolve(message.channel.send(`:ok_hand: You have succesfully invited ${client.users.get(args[1])} to your lobby! They can join the lobby by using \`!game join ${message.author.id}\``))
                 })
-                break;
         }
 
     }
