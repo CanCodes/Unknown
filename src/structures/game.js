@@ -18,6 +18,7 @@ class Game {
         this.words = [/* {word: "word", team: "red/blue/gray/dead"} */]
         this.guild = guild;
         this.channel = undefined;
+        this.invitedPlayers = []
     }
 
     async startGame() {
@@ -99,6 +100,12 @@ class Game {
             SEND_MESSAGES: false
         })
         this.channel.send(`playerleft`)
+        return true;
+    }
+
+    async invitePlayer(playerID){
+        if (this.players.includes(playerID) || this.invitedPlayers.includes(playerID)) return new Error("USER_EXISTS")
+        this.invitedPlayers.push(playerID)
         return true;
     }
 }
