@@ -29,10 +29,12 @@ class Game {
         this.blue = this.players.slice(this.players.length / 2 + 1, this.players.length)
 
         //team caps
-        var randomBlueCap = this.blue[Math.floor(Math.random() * this.blue.length)]
+
+        var randomBlueCap = this.blue[Math.floor(Math.random() * this.blue.length)];
+        var randomRedCap  = this.red[Math.floor(Math.random() * this.red.length)];
         this.red = this.red.splice(this.red.indexOf(this.host), 1);
         this.blue = this.blue.splice(this.blue.indexOf(randomBlueCap), 1);
-        this.captains = [this.host, randomBlueCap];
+        this.captains = [randomRedCap, randomBlueCap];
         //channel creation and Perms
         var permissionOverwrites = [{
             id: this.guild.id,
@@ -56,11 +58,31 @@ class Game {
 
         //words
         this.words = wordsList.sort(() => Math.random() - 0.5).slice(0, 25);
-        await this.WordThing()
-        this.words = wordsList.sort(() => Math.random() - 0.5).slice(0, 25);
-        //end
-        this.channel.send("Ok here are the words!\n**" + this.words.map(word => `${this.words.indexOf(word) + 1}. ${word}`).join("\n") + "**").then(msg => msg.pin());
+        [9, 8, 7, 1].forEach(element => {
+            var color;
 
+            switch (element) {
+                case 9: color = "red";      break;
+                case 8: color = "blue";     break;
+                case 7: color = "innocent"; break;
+                case 1: color = "killer";   break;
+            }   
+
+            for (var i = 0; i < element; i++) {
+                this.words.push({ word: this.words[i], team: color })
+            }
+        })
+        this.words = this.words.slice(25, this.words.length);
+        this.words = this.words.sort(() => Math.random() - 0.5).slice(0, 25);
+        console.log(this.words);
+        // Valve, pls fix.
+        
+        //end
+        // console.log()
+        this.channel.send("Ok here are the words!\n**" + this.words.map(word => `${this.words.indexOf(word) + 1}. ${word.word}`).join("\n") + "**").then(msg => msg.pin());
+        this.captains.forEach(captain => { this.guild.members.get(captain).user.send("Ok here are the words and the map!\n**" + this.words.map(word => {
+            `${this.words.indexOf(word) + 1}. ${word.word} *${word.team}*`
+        }).join("\n") + "**")})
         return true;
     }
 
@@ -69,23 +91,7 @@ class Game {
         this.players.push(playerID);
         return true;
     }
-
-    WordThing() {
-        [9, 8, 7, 1].forEach(element => {
-            var color;
-
-            element == 9 ? color = "red" : color = "killer"
-            element == 8 ? color = "blue" : color = "killer"
-            element == 7 ? color = "innocent" : color = "killer"
-
-            for (var i = 0; i < element; i++) {
-                this.words.push({ word: this.words[i], team: color })
-            }
-        })
-        this.words = this.words.slice(25, this.words.length);
-        console.log(this.words)
-    }
-
+    
     async removePlayer(playerID) {
         if (!this.players.includes(playerID)) return new Error("USER_NOT_FOUND")
         this.players.splice(this.players.indexOf(playerID), 1);
