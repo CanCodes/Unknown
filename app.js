@@ -1,10 +1,12 @@
 var Discord = require("discord.js");
+var fs = require("fs");
 var client = new Discord.Client();
 
 client.owners = ["316641074967871500", "478307244509888532"];
 client.commands = new Discord.Collection()
 client.aliases = new Discord.Collection()
 
+client.games = new Map();
 const prefix = "!"
 
 // Command init
@@ -25,7 +27,7 @@ client.on("ready",() => {
     console.log(`Logged as in ${client.user.tag}, Space Cowboy!`)
 })
 
-client.on("message", () => {
+client.on("message", async message => {
     if (message.author.bot) return;
     if (message.channel.type === "dm") return;
     if (!message.content.startsWith(prefix)) return;
@@ -36,4 +38,4 @@ client.on("message", () => {
     return cmd.execute(client, message, args);
 })
 
-client.login(process.env.TOKEN || require("config.json").TOKEN)
+client.login(process.env.TOKEN || require("./config.json").TOKEN)
