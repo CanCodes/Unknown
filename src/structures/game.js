@@ -29,17 +29,8 @@ class Game {
 
         //team caps
 
-        var randomCapGenerate = (arg) => {
-            var buffer = arg[Math.floor(Math.random() * arg.length)];
-            if (buffer == this.captains[0]) {
-                randomCapGenerate();
-            } else {
-                return buffer;
-            }
-        }
-
-        var randomBlueCap = randomCapGenerate(this.blue);
-        var randomRedCap  = randomCapGenerate(this.red);
+        var randomBlueCap = this.blue[Math.floor(Math.random() * this.blue.length)];
+        var randomRedCap  = this.red[Math.floor(Math.random() * this.red.length)];
         this.red = this.red.splice(this.red.indexOf(this.host), 1);
         this.blue = this.blue.splice(this.blue.indexOf(randomBlueCap), 1);
         this.captains = [randomRedCap, randomBlueCap];
