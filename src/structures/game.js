@@ -55,11 +55,11 @@ class Game {
 
         //words
         this.words = wordsList.sort(() => Math.random() - 0.5).slice(0, 25);
-        this.WordThing().then(() => {
-            this.words = wordsList.sort(() => Math.random() - 0.5).slice(0, 25);
-            //end
-            this.channel.send("Ok here are the words!\n**" + this.words.map(word => `${this.words.indexOf(word) + 1}. ${word}`).join("\n") + "**").then(msg=> msg.pin());
-        })
+        await this.WordThing()
+        this.words = wordsList.sort(() => Math.random() - 0.5).slice(0, 25);
+        //end
+        this.channel.send("Ok here are the words!\n**" + this.words.map(word => `${this.words.indexOf(word) + 1}. ${word}`).join("\n") + "**").then(msg => msg.pin());
+
         return true;
     }
 
@@ -69,8 +69,8 @@ class Game {
         return true;
     }
 
-    async WordThing() {
-        return [9, 8, 7, 1].forEach(element => {
+    WordThing() {
+        [9, 8, 7, 1].forEach(element => {
             var color;
 
             element == 9 ? color = "red" : color = "killer"
@@ -80,9 +80,9 @@ class Game {
             for (var i = 0; i < element; i++) {
                 this.words.push({ word: this.words[i], team: color })
             }
-            this.words.slice(0, 25)
-            console.log(this.words)
         })
+        this.words = this.words.slice(25, this.words.length);
+        console.log(this.words)
     }
 
     async removePlayer(playerID) {
