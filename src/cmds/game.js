@@ -17,46 +17,46 @@ class gameCmd extends baseCmd {
         if(!args[0]) return;
         switch(args[0].toLowerCase()) {
             case "c": case"create":
-                if (client.games.get(message.author.id)) return message.channel.send("You already have a game running!")
+                if (client.games.get(message.author.id)) return message.channel.send("<:error:594175676429369345> An error occured: You already have a game running!")
                 var newGame = new Game(message.author.id, [message.author.id], message.guild);
                 client.games.set(message.author.id, newGame);
-                message.channel.send(`:ok_hand: Succesfully created a lobby with the ID: \`${message.author.id}\`  (*The lobby is currently invite-only!*)`);
+                message.channel.send(`:ok_hand: Succesfully created a lobby with the ID: \`${message.author.id}\` (*The lobby is currently invite-only! To make it public please type \`!game public\`*)`);
             break;
             case "del": case "delete":
                 
             break;
             case "p": case "public":
-                if (!client.games.get(message.author.id)) return //not
+                if (!client.games.get(message.author.id)) return message.channel.send("<:error:594175676429369345> An error occured: You are not hosting a game!")
                 client.games.get(message.author.id).private = false;
-                message.channel.send(`:ok_hand: Succesfully set the game to public!`)
+                message.channel.send(`:ok_hand: Succesfully set the game to public! Players should type (\`!game join ${message.author.id}\`) to join your lobby.`)
             break;
             case "s": case"start":
-                    if (!client.games.get(message.author.id)) return //not
+                    if (!client.games.get(message.author.id)) return message.channel.send("<:error:594175676429369345> An error occured: You already have a game running!")
                 await client.games.get(message.author.id).startGame().catch(err => {
                     if(!err) return
                     if(err === "RULE_TWO"){
-                        return message.channel.send("error") //not
+                        return message.channel.send("<:error:594175676429369345> An error occured: The player amount should be an even number!")
                     } else {
                         console.log(err)
                     }
                 })
-                message.channel.send(`Succesfully started the game.`) //not
+                message.channel.send(`:ok_hand: Succesfully started the game with the host ${message.author.id} (\`${message.author.id}\`)`)
             break;
             case "j": case "join":
-                if(!client.games.get(args[1])) return //not
-                if (client.games.get(args[1]).private) return message.channel.send("The game is invite-only!")
+                if(!client.games.get(args[1])) return message.channel.send(`<:error:594175676429369345> An error occured: No lobby's found within the id: \`${args[1]}\``)
+                if (client.games.get(args[1]).private) return message.channel.send(`<:error:594175676429369345> The game which is hosted by ${client.users.get(args[1]).tag} is invite-only!`)
                 let res = await client.games.get(args[1]).addNewPlayer(message.author.id);
                 if (typeof res != "boolean") {
                     return console.log(res)
                 } else {
-                    message.channel.send(`You successfully joined the game ${message.author.tag}! ${client.games.get(args[1]).players.length}/16`)
+                    message.channel.send(`:ok_hand: You successfully joined the game hosted by ${client.users.get(args[1]).tag}! **(**\`${client.games.get(args[1]).players.length}/16\` players**)**`)
                 }
             break;
             case"k": case"kick":
-                if(!client.games.get(message.author.id)) return //not
-                if (!args[1]) return //not
+                if(!client.games.get(message.author.id)) return message.channel.send(`<:error:594175676429369345> An error occured: You are not hosting a game.`)
+                if (!args[1]) return message.channel.send(`<:error:594175676429369345> Please give a valid argument to kick a user from the game. (\`!game kick <user:@user/id>\`)`)
                 let kickMember = message.guild.mentions.members.first() || message.guild.members.get(args[1])
-                if(!kickMember) return //not
+                if(!kickMember) return message.channel.send(`<:error:594175676429369345> The argument is not a valid user to be removed. (\`!game kick <user:@user/id>\`)`)
                 client.games.get(message.author.id).removePlayer(kickMember.id).then(res => {
 
                 })
