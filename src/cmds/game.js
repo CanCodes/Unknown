@@ -22,9 +22,12 @@ class gameCmd extends baseCmd {
                 client.games.set(message.author.id, newGame);
                 message.channel.send(`:ok_hand: Succesfully created a lobby with the ID: \`${message.author.id}\`  (*The lobby is currently invite-only!*)`);
             break;
+            case "del": case "delete":
+                
+            break;
             case "p": case "public":
                 if (!client.games.get(message.author.id)) return //not
-                client.games.get(message.author.id).private = true;
+                client.games.get(message.author.id).private = false;
                 message.channel.send(`:ok_hand: Succesfully set the game to public!`)
             break;
             case "s": case"start":
@@ -41,11 +44,12 @@ class gameCmd extends baseCmd {
             break;
             case "j": case "join":
                 if(!client.games.get(args[1])) return //not
+                if (client.games.get(args[1]).private) return message.channel.send("The game is invite-only!")
                 let res = await client.games.get(args[1]).addNewPlayer(message.author.id);
                 if (typeof res != "boolean") {
-                    return message.channel.send(res)
+                    return console.log(res)
                 } else {
-                    message.channel.send("Joined falan filan")
+                    message.channel.send(`You successfully joined the game ${message.author.tag}! ${client.games.get(args[1]).players.length}/16`)
                 }
             break;
             case"k": case"kick":
