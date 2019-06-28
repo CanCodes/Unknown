@@ -1,4 +1,6 @@
 var fs = require("fs");
+var events = require("events");
+var eventEmitter = new events.EventEmitter();
 var wordsList = fs.readFileSync("D:/Yazılım/Unknown/src/words.txt", "utf8");
 wordsList = wordsList.split("\n")
 // Guild eski bilgilerle devam edebilir dikkat etmek gerek.
@@ -12,13 +14,14 @@ class Game {
         this.blueTeam = []
         this.redPoint = 0;
         this.bluePoint = 0;
-        this.turn = "red"
+        this.turn = "blue"
         this.captains = undefined
         this.running = false;
         this.words = [/* {word: "word", team: "red/blue/gray/dead"} */]
         this.guild = guild;
         this.channel = undefined;
-        this.invitedPlayers = []
+        this.invitedPlayers = [];
+        this.foundAnswers = [];
     }
 
     async startGame() {
@@ -69,7 +72,7 @@ class Game {
             }   
 
             for (var i = 0; i < element; i++) {
-                this.words.push({ word: this.words[i], team: color })
+                this.words.push({ word: this.words[i], team: color, found: false })
             }
         })
         this.words = this.words.slice(25, this.words.length);
@@ -83,6 +86,7 @@ class Game {
         this.captains.forEach(captain => { this.guild.members.get(captain).user.send("Ok here are the words and the map!\n**" + this.words.map(word => {
             `${this.words.indexOf(word) + 1}. ${word.word} *${word.team}*`
         }).join("\n") + "**")})
+        this.nextTurn(true)
         return true;
     }
 
@@ -107,6 +111,141 @@ class Game {
         if (this.players.includes(playerID) || this.invitedPlayers.includes(playerID)) return new Error("USER_EXISTS")
         this.invitedPlayers.push(playerID)
         return true;
+    }
+
+    async newTargets(wordNumbers, identifier) {
+        this.currentTarget = {
+            words: wordNumbers.map(number => number--),
+            identifier: identifier
+        }
+
+        this.channel.send(`${this.turn} team's new target: \`${identifier} : ${wordNumbers.length}\` take your guesses!`);
+
+        // !choose 2 3 4 5 - AVCILIK
+    }
+    /*
+        {
+            answer: answer,
+            player: PlayerID
+        }
+    
+    */
+    async givePoints(arg) {
+        switch (arg) {
+            case "red": this.redPoint++; break;
+            case "blue": this.bluePoint++; break;
+        }
+    }
+
+    async handleAnswers(req) {
+        var checkTeam = (arg) => {
+            var buffer = 0;
+            switch(arg) {
+                case "red" : 
+                buffer = this.redTeam.length()-1;
+                break;
+                case "blue": 
+                buffer = this.blueTeam.length()-1;
+                break;
+            } return buffer;
+        };
+
+        var getTeam = (bool) => {
+            if (bool) {
+                switch (this.turn) {
+                    case "red": return "blue"; break;
+                    case "blue": return "red"; break;
+                }
+            } else {
+                return this.turn;
+            }
+        };
+
+        var endTurn = (arg) => {
+            for (i in this.foundAnswers) {
+                this.words[i].found = true;
+            }
+            this.foundAnswers = [];
+            this.nextTurn(arg);
+        }
+        
+        // Found subvarı ayrı test et.
+        if (!(this.words[req.answer - 1].found)) return this.channel.send(`${this.guild.members.get(player).user.tag}, that word has already been found! It's ${this.words[req.answer - 1].team} team's word! Try again please.`)
+        /*
+        END TURN ARGLARI
+        0 => Karşı takımın kartını buldun,
+        1 => Innocent
+        2 => Kırmızı takım kazandı turnu
+        3 => Mavi takım turnu kazandı
+        */
+
+        if (!(this.foundAnswers.includes(answer))) {
+            switch (this.words[req.answer - 1].color) {
+                case getTeam(0): this.foundAnswers.push(req.answer-1); break;
+                case getTeam(1):
+                    this.foundAnswers.push(req.answer-1);
+                    this.givePoints(getTeam(1));
+                    endTurn(0);
+                break;
+                case "innocent":
+                    this.foundAnswers.push(req.answer-1);
+                    endTurn(1);
+                break;
+                case "killer": this.endGame(getTeam(1),true); break;
+            }
+        } else if (this.foundAnswers.length() == checkTeam(getTeam(0))){
+            switch (getTeam(0)) {
+                case "red" : 
+                this.redPoint++; 
+                endTurn(2)
+                break;
+                case "blue": 
+                this.bluePoint++;
+                endTurn(3)
+                break;
+            }
+        }
+    }
+
+    async nextTurn() {
+        switch (this.turn) {
+            case "red":
+                this.turn = "blue"
+                this.redTeam.forEach(user => {
+                    this.channel.overwritePermissions(user, {
+                        SEND_MESSAGES: false
+                    })
+                })
+                this.blueTeam.forEach(user => {
+                    this.channel.overwritePermissions(user, {
+                        SEND_MESSAGES: true
+                    })
+                })
+                this.channel.send(`It's **Blue Team**'s Turn! Just a friendly reminder of the scoreboard:\n**Red Team: ${this.redPoint}\nBlue Team: ${this.bluePoint}**`)
+                break;
+            case "blue":
+                this.turn = "red"
+                this.blueTeam.forEach(user => {
+                    this.channel.overwritePermissions(user, {
+                        SEND_MESSAGES: false
+                    })
+                })
+                this.redTeam.forEach(user => {
+                    this.channel.overwritePermissions(user, {
+                        SEND_MESSAGES: true
+                    })
+                })
+                this.channel.send(`It's **Red Team**'s Turn! Just a friendly reminder of the scoreboard:\n**Red Team: ${this.redPoint}\nBlue Team: ${this.bluePoint}**`)
+                break;
+        }
+    }
+
+    // @argument arg => HANGI TAKIM KAZANDI
+    async endGame(arg, killer=false) {
+        this.channel.send(`Oh the game ended! Let's see the final results...\n\n**${arg} team won the game, Congrats!\n*This channel will self-destruct in 20 seconds.*`);
+        setTimeout(() => {
+            this.channel.delete();
+        }, 20000);
     }
 }
 
