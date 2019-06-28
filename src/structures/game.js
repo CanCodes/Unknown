@@ -98,8 +98,7 @@ class Game {
     }
 
     async invitePlayer(playerID){
-        if(this.players.includes(playerID)) return
-        if(this.invitedPlayers.includes(playerID)) return 
+        if (this.players.includes(playerID) || this.invitedPlayers.includes(playerID)) return new Error("USER_EXISTS")
         this.invitedPlayers.push(playerID)
         return true;
     }
