@@ -43,7 +43,7 @@ class gameCmd extends baseCmd {
             break;
             case "j": case "join":   //BURAYA- USER_EXISTS ERRORU EKLENECEK
                 if(!client.games.get(args[1])) return message.channel.send(`<:error:594175676429369345> An error occured: No lobby's found within the id: \`${args[1]}\``)
-                if (client.games.get(args[1]).private && !client.games.get(args[1]).invitedPlayers.includes(args[1])) return message.channel.send(`<:error:594175676429369345> The game which is hosted by ${client.users.get(args[1]).tag} is invite-only and you are not invited!`)
+                if (client.games.get(args[1]).private && !client.games.get(args[1]).invitedPlayers.includes(message.author.id)) return message.channel.send(`<:error:594175676429369345> The game which is hosted by ${client.users.get(args[1]).tag} is invite-only and you are not invited!`)
                 let res = await client.games.get(args[1]).addNewPlayer(message.author.id);
                 if (typeof res != "boolean") {
                     return console.log(res)
@@ -65,10 +65,10 @@ class gameCmd extends baseCmd {
                 case "i": case"invite":
                 if(!client.games.get(message.author.id)) return message.channel.send(`<:error:594175676429369345> An error occured: You are not hosting a game.`)
                 if(!args[1]) return message.channel.send(`<:error:594175676429369345> Please give a valid argument to invite a user to the lobby. (\`!game invite <user:@user/id>\`)`)
-                if (!client.games.get(args[1]).private) return message.channel.send(`<:error:594175676429369345> The game which is hosted by ${client.users.get(args[1]).tag} is not invite-only!`)
-                if(client.games.get(args[1]).invitedPlayers.includes(args[0])) return message.channel.send(`<:error:594175676429369345> The user (${client.users.get(args[1]).tag}) is already invited!`)
-                    client.games.get(args[1]).invitePlayer(args[1]).then(resolve => {
-                        resolve(message.channel.send(`:ok_hand: You have succesfully invited ${client.users.get(args[1])} to your lobby! They can join the lobby by using \`!game join ${message.author.id}\``))
+                if (!client.games.get(message.author.id).private) return message.channel.send(`<:error:594175676429369345> The game which is hosted by ${client.users.get(args[1]).tag} is not invite-only!`)
+                if(client.games.get(message.author.id).invitedPlayers.includes(args[0])) return message.channel.send(`<:error:594175676429369345> The user (${client.users.get(args[1]).tag}) is already invited!`)
+                    client.games.get(message.author.id).invitePlayer(args[1]).then(() => {
+                        message.channel.send(`:ok_hand: You have succesfully invited ${client.users.get(args[1])} to your lobby! They can join the lobby by using \`!game join ${message.author.id}\``)
                 })
         }
 
