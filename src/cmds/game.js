@@ -80,11 +80,27 @@ class gameCmd extends baseCmd {
                 })
                 break;
             case "choose":
-                if(message.guild) return;
-                if(!client.games.find(a => a.captains.includes(message.author.id))) return message.channel.send(`<:error:594175676429369345> An error occured: You are not captain of a team.`)
-                let number = args.split("-")[0]
+                if (message.guild) return;
+                if (!client.games.find(a => a.captains.includes(message.author.id))) return message.channel.send(`<:error:594175676429369345> An error occured: You are not captain of a team.`)
+                args = args.slice(1).split("")
+                let numberz = args.split("-")[0]
                 let identifier = args.split("-")[1]
-                
+                if(!identifier) return message.channel.send("not") //not
+                if(!numberz) return message.channel.send("yo") // not
+                let chooseArr = []
+                for (var i = 0; i < numberz.length - 1; i++) {
+                    chooseArr.push(parseInt(numberz[i]))
+                }
+                client.games.find(r => r.players.includes(message.author.id)).newTargets(chooseArr, identifier).then(res => {
+
+                })
+                break;
+                case "guess":
+                if(message.channel.type === "dm") return;
+                if(message.channel.parentID !== "593932243442073640") return message.channel.send("<:error:594175676429369345> You only can guess your words in your game chat!")
+                if(!client.games.find(a => a.players.includes(message.author.id))) return message.channel.send("<:error:594175676429369345> You are not playing a game!")
+
+
 
         }
 

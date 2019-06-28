@@ -113,7 +113,9 @@ class Game {
         return true;
     }
 
-    async newTargets(wordNumbers, identifier) {
+    async newTargets(player, wordNumbers, identifier) {
+        if (!this.captains.includes(player)) return false;
+        
         this.currentTarget = {
             words: wordNumbers.map(number => number--),
             identifier: identifier
@@ -207,6 +209,46 @@ class Game {
         }
     }
 
+    async nextTurn() {
+        switch (this.turn) {
+            case "red":
+                this.turn = "blue"
+                this.redTeam.forEach(user => {
+                    this.channel.overwritePermissions(user, {
+                        SEND_MESSAGES: false
+                    })
+                })
+                this.blueTeam.forEach(user => {
+                    this.channel.overwritePermissions(user, {
+                        SEND_MESSAGES: true
+                    })
+                })
+                this.channel.send(`It's **Blue Team**'s Turn! Just a friendly reminder of the scoreboard:\n**Red Team: ${this.redPoint}\nBlue Team: ${this.bluePoint}**`)
+                break;
+            case "blue":
+                this.turn = "red"
+                this.blueTeam.forEach(user => {
+                    this.channel.overwritePermissions(user, {
+                        SEND_MESSAGES: false
+                    })
+                })
+                this.redTeam.forEach(user => {
+                    this.channel.overwritePermissions(user, {
+                        SEND_MESSAGES: true
+                    })
+                })
+                this.channel.send(`It's **Red Team**'s Turn! Just a friendly reminder of the scoreboard:\n**Red Team: ${this.redPoint}\nBlue Team: ${this.bluePoint}**`)
+                break;
+        }
+    }
+
+    // @argument arg => HANGI TAKIM KAZANDI
+    async endGame(arg, killer=false) {
+        this.channel.send(`Oh the game ended! Let's see the final results...\n\n**${arg} team won the game, Congrats!\n*This channel will self-destruct in 20 seconds.*`);
+        setTimeout(() => {
+            this.channel.delete();
+        }, 20000);
+    }
     async nextTurn() {
         switch (this.turn) {
             case "red":
