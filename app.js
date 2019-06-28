@@ -6,7 +6,7 @@ client.owners = ["316641074967871500", "478307244509888532"];
 client.commands = new Discord.Collection()
 client.aliases = new Discord.Collection()
 
-client.games = new Map();
+client.games = new Discord.Collection()
 const prefix = "!"
 
 // Command init
@@ -29,7 +29,6 @@ client.on("ready",() => {
 
 client.on("message", async message => {
     if (message.author.bot) return;
-    if (message.channel.type === "dm") return;
     if (!message.content.startsWith(prefix)) return;
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const cmdName = args.shift().toLowerCase();
