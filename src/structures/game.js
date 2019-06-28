@@ -58,6 +58,7 @@ class Game {
         await this.WordThing()
         this.words = wordsList.sort(() => Math.random() - 0.5).slice(0, 25);
         //end
+        console.log(this.words)
         this.channel.send("Ok here are the words!\n**" + this.words.map(word => `${this.words.indexOf(word) + 1}. ${word}`).join("\n") + "**").then(msg => msg.pin());
 
         return true;
@@ -69,20 +70,19 @@ class Game {
         return true;
     }
 
-    WordThing() {
+    async WordThing() {
         [9, 8, 7, 1].forEach(element => {
             var color;
 
-            element == 9 ? color = "red" : color = "killer"
-            element == 8 ? color = "blue" : color = "killer"
-            element == 7 ? color = "innocent" : color = "killer"
+            color = element == 9 ? "red" : "killer"
+            color = element == 8 ? "blue" : "killer"
+            color = element == 7 ? "innocent" : "killer"
 
             for (var i = 0; i < element; i++) {
                 this.words.push({ word: this.words[i], team: color })
             }
         })
         this.words = this.words.slice(25, this.words.length);
-        console.log(this.words)
     }
 
     async removePlayer(playerID) {
