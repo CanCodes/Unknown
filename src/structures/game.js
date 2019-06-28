@@ -28,10 +28,12 @@ class Game {
         this.blue = this.players.slice(this.players.length / 2 + 1, this.players.length)
 
         //team caps
-        var randomBlueCap = this.blue[Math.floor(Math.random() * this.blue.length)]
+
+        var randomBlueCap = this.blue[Math.floor(Math.random() * this.blue.length)];
+        var randomRedCap  = this.red[Math.floor(Math.random() * this.red.length)];
         this.red = this.red.splice(this.red.indexOf(this.host), 1);
         this.blue = this.blue.splice(this.blue.indexOf(randomBlueCap), 1);
-        this.captains = [this.host, randomBlueCap];
+        this.captains = [randomRedCap, randomBlueCap];
         //channel creation and Perms
         var permissionOverwrites = [{
             id: this.guild.id,
