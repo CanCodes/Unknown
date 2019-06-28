@@ -17,7 +17,7 @@ class aboutCmd extends baseCmd {
         embed.setAuthor("About Unknown Bot", client.user.avatarURL)
         embed.setThumbnail(client.user.avatarURL)
         embed.setColor("BLURPLE")
-        embed.addField("What is this game?","Dope answer")
+        embed.addField("What is this game?","")
         embed.addField("How to play the game?",`Hey ${message.author.username}!\n To play this...`)
         embed.addField("What are the rules?","Dope Rules here")
         message.channel.send(embed)
