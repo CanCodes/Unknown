@@ -4,4 +4,4 @@ Two teams compete to see who can make contact with all of their players first. T
 
 If you want to hang out with us and test the bot, here is the invite link to our Discor Server: https://discord.gg/WA3Zzrz
 
-Inspired by the good old board game: (Codenames)[https://boardgamegeek.com/boardgame/178900/codenames]
+Inspired by the good old board game: [Codenames](https://boardgamegeek.com/boardgame/178900/codenames)
