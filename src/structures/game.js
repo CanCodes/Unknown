@@ -28,7 +28,17 @@ class Game {
         this.blue = this.players.slice(this.players.length / 2 + 1, this.players.length)
 
         //team caps
-        var randomBlueCap = this.blue[Math.floor(Math.random() * this.blue.length)]
+
+        var randomBlueCapGenerate = () => {
+            var buffer = this.blue[Math.floor(Math.random() * this.blue.length)];
+            if (buffer == this.captains[0]) {
+                randomBlueCapCreate();
+            } else {
+                return buffer;
+            }
+        }
+
+        var randomBlueCap = randomBlueCapGenerate();
         this.red = this.red.splice(this.red.indexOf(this.host), 1);
         this.blue = this.blue.splice(this.blue.indexOf(randomBlueCap), 1);
         this.captains = [this.host, randomBlueCap];
@@ -69,7 +79,7 @@ class Game {
         return true;
     }
 
-    WordThing() {
+    async WordThing() {
         [9, 8, 7, 1].forEach(element => {
             var color;
 
