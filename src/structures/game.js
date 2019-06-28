@@ -61,6 +61,7 @@ class Game {
 
         //words
         this.words = wordsList.sort(() => Math.random() - 0.5).slice(0, 25);
+        console.log(this.words);
         [9, 8, 7, 1].forEach(element => {
             var color;
 
@@ -77,17 +78,16 @@ class Game {
         })
         this.words = this.words.slice(25, this.words.length);
         this.words = this.words.sort(() => Math.random() - 0.5).slice(0, 25);
-        console.log(this.words);
         // Valve, pls fix.
         
         //end
         // console.log()
         this.channel.send("Ok here are the words!\n**" + this.words.map(word => `${this.words.indexOf(word) + 1}. ${word.word}`).join("\n") + "**").then(msg => msg.pin());
-        this.captains.forEach(captain => { this.guild.members.get(captain).user.send("Ok here are the words and the map!\n**" + this.words.map(word => {
-            `${this.words.indexOf(word) + 1}. ${word.word} *${word.team}*`
-        }).join("\n") + "**")})
+        this.captains.forEach(captain => {
+            this.guild.members.get(captain).user.send("Ok here are the words and the map!\n**" + 
+            this.words.map(word => `${this.words.indexOf(word) + 1}. ${word.word} *${word.team}*`).join("\n") + "**")
+    })
         this.nextTurn(true)
-        return true;
     }
 
     async addNewPlayer(playerID) {
@@ -99,10 +99,14 @@ class Game {
     async removePlayer(playerID) {
         if (!this.players.includes(playerID)) return new Error("USER_NOT_FOUND")
         this.players.splice(this.players.indexOf(playerID), 1);
-        this.channel.overwritePermissions(playerID, {
-            VIEW_CHANNEL: false,
-            SEND_MESSAGES: false
-        })
+        this.channel.replacePermissionOverwrites({
+            overwrites: [
+                {
+                    id: playerID,
+                    denied: ['VIEW_CHANNEL'],
+                },
+            ]
+        });
         this.channel.send(`playerleft`)
         return true;
     }
@@ -113,8 +117,9 @@ class Game {
         return true;
     }
 
-    async newTargets(player, wordNumbers, identifier) {
-        if (!this.captains.includes(player)) return false;
+    async newTargets(wordNumbers, identifier) {
+        // if (!this.captains.includes(player)) return false;
+        console.log(wordNumbers);
         
         this.currentTarget = {
             words: wordNumbers.map(number => number--),
@@ -214,13 +219,23 @@ class Game {
             case "red":
                 this.turn = "blue"
                 this.redTeam.forEach(user => {
-                    this.channel.overwritePermissions(user, {
-                        SEND_MESSAGES: false
+                    this.channel.replacePermissionOverwrites({
+                        overwrites: [
+                            {
+                                id: user,
+                                deny: ['SEND_MESSAGES'],
+                            },
+                        ],
                     })
                 })
                 this.blueTeam.forEach(user => {
-                    this.channel.overwritePermissions(user, {
-                        SEND_MESSAGES: true
+                    this.channel.replacePermissionOverwrites({
+                        overwrites: [
+                            {
+                                id: user,
+                                allow: ['SEND_MESSAGES'],
+                            },
+                        ],
                     })
                 })
                 this.channel.send(`It's **Blue Team**'s Turn! Just a friendly reminder of the scoreboard:\n**Red Team: ${this.redPoint}\nBlue Team: ${this.bluePoint}**`)
@@ -228,13 +243,23 @@ class Game {
             case "blue":
                 this.turn = "red"
                 this.blueTeam.forEach(user => {
-                    this.channel.overwritePermissions(user, {
-                        SEND_MESSAGES: false
+                    this.channel.this.channel.replacePermissionOverwrites({
+                        overwrites: [
+                            {
+                                id: user,
+                                deny: ['SEND_MESSAGES'],
+                            },
+                        ],
                     })
                 })
                 this.redTeam.forEach(user => {
-                    this.channel.overwritePermissions(user, {
-                        SEND_MESSAGES: true
+                    this.channel.replacePermissionOverwrites({
+                        overwrites: [
+                            {
+                                id: user,
+                                allow: ['SEND_MESSAGES'],
+                            },
+                        ],
                     })
                 })
                 this.channel.send(`It's **Red Team**'s Turn! Just a friendly reminder of the scoreboard:\n**Red Team: ${this.redPoint}\nBlue Team: ${this.bluePoint}**`)
@@ -284,6 +309,7 @@ class Game {
 
     // @argument arg => HANGI TAKIM KAZANDI
     async endGame(arg, killer=false) {
+        if (arg == "fastEnd") return this.channel.delete();
         this.channel.send(`Oh the game ended! Let's see the final results...\n\n**${arg} team won the game, Congrats!\n*This channel will self-destruct in 20 seconds.*`);
         setTimeout(() => {
             this.channel.delete();

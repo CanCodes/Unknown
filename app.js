@@ -6,7 +6,7 @@ client.owners = ["316641074967871500", "478307244509888532"];
 client.commands = new Discord.Collection()
 client.aliases = new Discord.Collection()
 
-client.games = new Map();
+client.games = new Discord.Collection()
 const prefix = "!"
 
 // Command init
