@@ -29,19 +29,20 @@ class Game {
 
         //team caps
 
-        var randomBlueCapGenerate = () => {
-            var buffer = this.blue[Math.floor(Math.random() * this.blue.length)];
+        var randomCapGenerate = (arg) => {
+            var buffer = arg[Math.floor(Math.random() * arg.length)];
             if (buffer == this.captains[0]) {
-                randomBlueCapCreate();
+                randomCapGenerate();
             } else {
                 return buffer;
             }
         }
 
-        var randomBlueCap = randomBlueCapGenerate();
+        var randomBlueCap = randomCapGenerate(this.blue);
+        var randomRedCap  = randomCapGenerate(this.red);
         this.red = this.red.splice(this.red.indexOf(this.host), 1);
         this.blue = this.blue.splice(this.blue.indexOf(randomBlueCap), 1);
-        this.captains = [this.host, randomBlueCap];
+        this.captains = [randomRedCap, randomBlueCap];
         //channel creation and Perms
         var permissionOverwrites = [{
             id: this.guild.id,
