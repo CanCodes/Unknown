@@ -98,8 +98,8 @@ class Game {
     }
 
     async invitePlayer(playerID){
-        if(this.players.includes(playerID)) return new Error("USER_ALREADY_JOINED")
-        if(this.invitedPlayers.includes(playerID)) return new Error("USER_ALREADY_INVITED")
+        if(this.players.includes(playerID)) return
+        if(this.invitedPlayers.includes(playerID)) return 
         this.invitedPlayers.push(playerID)
         return true;
     }
