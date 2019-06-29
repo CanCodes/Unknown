@@ -35,8 +35,8 @@ class Game {
 
         var randomBlueCap = this.blueTeam[Math.floor(Math.random() * this.blueTeam.length)];
         var randomRedCap = this.redTeam[Math.floor(Math.random() * this.redTeam.length)];
-        this.redTeam = this.redTeam.splice(this.red.indexOf(this.host), 1);
-        this.blueTeam = this.blueTeam.splice(this.blue.indexOf(randomBlueCap), 1);
+        this.redTeam = this.redTeam.splice(this.redTeam.indexOf(this.host), 1);
+        this.blueTeam = this.blueTeam.splice(this.redTeam.indexOf(randomBlueCap), 1);
         this.captains = [randomRedCap, randomBlueCap];
         //channel creation and Perms
         var permissionOverwrites = [{
