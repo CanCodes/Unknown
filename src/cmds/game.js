@@ -86,7 +86,7 @@ class gameCmd extends baseCmd {
                 })
                 break;
             case "choose":
-                if (message.guild) return;
+                if (message.channel.type != "dm") return;
                 if (!client.games.find(a => a.captains.includes(message.author.id))) return message.channel.send(`<:error:594175676429369345> An error occured: You are not captain of a team.`)
                 
                 let numberz = args.slice(1).join(" ").split("-")[0].split(" ")
@@ -96,7 +96,7 @@ class gameCmd extends baseCmd {
                 let chooseArr = []
                 for (var i = 0; i < numberz.length -1; i++) {
                     chooseArr.push(parseInt(numberz[i]))
-                }
+                }                
                 client.games.find(r => r.players.includes(message.author.id)).newTargets(chooseArr, identifier);
                 break;
                 case "guess":
@@ -105,8 +105,8 @@ class gameCmd extends baseCmd {
                 if(!client.games.find(a => a.players.includes(message.author.id))) return message.channel.send("<:error:594175676429369345> You are not playing a game!")
                 if(!parseInt(args[1])) return message.channel.send("no args1") //not
                 if(parseInt(args[1]) > 25) return message.channel.send("cannot be more than 25")
-                client.games.find(a => a.players.has(message.author.id)).handleAnswers({answer: parseInt(args[1]), player: message.author.id})
-
+                client.games.find(a => a.players.includes(message.author.id)).handleAnswers({answer: parseInt(args[1]), player: message.author.id})
+                break;
 
         }
 
