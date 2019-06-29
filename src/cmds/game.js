@@ -99,7 +99,6 @@ class gameCmd extends baseCmd {
                 }                
                 client.games.find(r => r.players.includes(message.author.id)).newTargets(chooseArr, identifier);
                 break;
-                
                 case "guess":
                 if(message.channel.type === "dm") return;
                 if(message.channel.parentID !== "593932243442073640") return message.channel.send("<:error:594175676429369345> You only can guess your words in your game chat!")
